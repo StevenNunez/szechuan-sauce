@@ -1,14 +1,14 @@
 defmodule MetrocardCleanSwiper do
   @fare_in_cents 275
-  @bonus_threshold 5.50
-  @bonus_amount_mulitplier 1.05
+  @bonus_threshold_in_cents 550
+  @bonus_amount_mulitplier_in_cents 105
 
   def get_clean_swipes(starting_balance, max_addable_amount) do
     do_get_clean_swipes(max_addable_amount, starting_balance, max_addable_amount, [])
   end
 
-  def get_balance(starting_balance, amount_to_add) when amount_to_add >= @bonus_threshold do
-    cents = convert_to_cents(amount_to_add) * @bonus_amount_mulitplier
+  def get_balance(starting_balance, amount_to_add) when (amount_to_add * 100) >= @bonus_threshold_in_cents do
+    cents = (convert_to_cents(amount_to_add) * @bonus_amount_mulitplier_in_cents) / 100
     amount_with_bonus = cents |> convert_to_dollars
     do_get_balance(starting_balance, amount_with_bonus)
   end
@@ -21,7 +21,7 @@ defmodule MetrocardCleanSwiper do
     get_balance(starting_balance, amount_to_add)
     |> convert_to_cents
   end
-  
+
   def is_clean_swipe?(amount) do
     convert_to_cents(amount) |> rem(@fare_in_cents) == 0
   end
@@ -39,7 +39,7 @@ defmodule MetrocardCleanSwiper do
   end
 
   defp convert_to_cents(amount), do: amount * 100 |> round
-  defp convert_to_dollars(amount), do: amount / 100 
+  defp convert_to_dollars(amount), do: amount / 100
   defp do_get_balance(starting_balance, amount_to_add) do
     convert_to_cents(starting_balance) + convert_to_cents(amount_to_add)
     |> convert_to_dollars
